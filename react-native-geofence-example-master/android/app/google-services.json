@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "716755841297",
+    "firebase_url": "https://parentgeofencing-5d5e8-default-rtdb.firebaseio.com",
+    "project_id": "parentgeofencing-5d5e8",
+    "storage_bucket": "parentgeofencing-5d5e8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716755841297:android:bf5c42cd5d0dd2a4a49cb0",
+        "android_client_info": {
+          "package_name": "com.boundarytestapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "716755841297-3mo1bl7bspi6vtihsn7e30vo7ou5nab2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPwJEfnJmS-LpLQL59Zq2wy6q4zGxSOEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "716755841297-3mo1bl7bspi6vtihsn7e30vo7ou5nab2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "716755841297-2h8c7sk0omkha3p6jhiar5onhevifd70.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.parentios"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
