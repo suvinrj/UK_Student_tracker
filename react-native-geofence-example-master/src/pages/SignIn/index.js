@@ -17,7 +17,7 @@ const SignInParent = ({navigation}) => {
     signInWithEmailAndPassword(auth, email, password)
     .then((re)=>{
       console.log(re.user.uid);
-      navigation.navigate('Menu')
+      navigation.replace('Menu')
     })
   .catch((err)=>{
     console.log(err);

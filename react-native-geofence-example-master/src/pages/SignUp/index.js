@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, Alert } from 'react-native'
 import React, {useState} from 'react'
 import { Button, Header, TextInput, Gap } from '../../components'
 import { auth, db } from '../../../firebase/firebase-config'
@@ -19,41 +19,48 @@ const SignUpParent = ({navigation}) => {
   let dataStudent = []
 
   const RegisterUser = () => {
-    console.log('res', email, password);
-    const dbRef = r(getDatabase());
-      get(child(dbRef, `Student/${noReg}`)).then((snapshot) => {
-        snapshot.forEach(function(item){
-          var itemVal = item.val()
-          dataStudent.push(itemVal)
-        })
-  
-        if (snapshot.exists()) {
-          createUserWithEmailAndPassword(auth, email, password)
-          .then((re)=>{
-            update(r(db, `Parent/${re.user.uid}`), {
-              Email: email,
-              Name: name,
-              PhoneNumber: PhoneNumber
-            })
-            update(r(db, `Parent/${re.user.uid}/Student`), {
-              noReg: dataStudent[3],
-              StudentPhoneNumber: dataStudent[2]
-            })
-            const data = {
-              uid: re.user.uid,
-            }
-            storeData('user', data)
-            navigation.navigate('Menu', data)
+    if(!name || !password || !email || !PhoneNumber || !noReg){
+      Alert.alert(
+        "Alert!",
+        "Please fill all boxes. Thank you!"
+      )
+    } else {
+      console.log('res', email, password);
+      const dbRef = r(getDatabase());
+        get(child(dbRef, `Student/${noReg}`)).then((snapshot) => {
+          snapshot.forEach(function(item){
+            var itemVal = item.val()
+            dataStudent.push(itemVal)
           })
-        .catch((err)=>{
-          console.log(err);
-        })
-        } else {
-          console.log("No data available");
-        }
-      }).catch((error) => {
-        console.error(error);
-      });
+
+          if (snapshot.exists()) {
+            createUserWithEmailAndPassword(auth, email, password)
+            .then((re)=>{
+              update(r(db, `Parent/${re.user.uid}`), {
+                Email: email,
+                Name: name,
+                PhoneNumber: PhoneNumber
+              })
+              update(r(db, `Parent/${re.user.uid}/Student`), {
+                noReg: dataStudent[3],
+                StudentPhoneNumber: dataStudent[2]
+              })
+              const data = {
+                uid: re.user.uid,
+              }
+              storeData('user', data)
+              navigation.navigate('Menu', data)
+            })
+          .catch((err)=>{
+            console.log(err);
+          })
+          } else {
+            console.log("No data available");
+          }
+        }).catch((error) => {
+          console.error(error);
+        });
+    }
 }
 
 
