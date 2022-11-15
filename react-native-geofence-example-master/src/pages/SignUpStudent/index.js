@@ -27,6 +27,9 @@ const SignUpStudent = ({navigation}) => {
         Name: name,
         PhoneNumber: PhoneNumber,
       })
+      update(r(db, `Student/${auth.currentUser.uid}`),{
+        noReg: noReg
+      })
       const data = {
         uid: re.user.uid,
       }

@@ -8,18 +8,20 @@ import Permissions, {PERMISSIONS, RESULTS} from 'react-native-permissions';
 import MapView, {Polygon} from 'react-native-maps';
 import { unklabGeofence } from '../Coordate_Geofence/Coordinate';
 import { locations } from '../unklab';
-
+import {getDatabase, ref as r, child, get} from "firebase/database";
+import { auth } from '../../../../firebase/firebase-config';
 
 import {name as appName} from '../../../../app.json';
 import {AppRegistry} from 'react-native';
 
 
 import { eiffelGeofence} from '../Coordate_Geofence/Coordinate';
-
+import axios from 'axios';
 
 const isAndroid = Platform.OS === 'android';
 const isIOS = Platform.OS === 'ios';
-
+let parentToken = '';
+let noReg = '';
 const MapCircle = ({latitude, longitude, radius}) => {
   
   return (
@@ -39,8 +41,51 @@ const MapCircle = ({latitude, longitude, radius}) => {
   );
 };
 
+const getNoreg = async () => {
+  try {
+    const database = getDatabase();
+    const rootReference = r(database);
+    const dbGet = await get(child(rootReference, `Student/${auth.currentUser.uid}`));
+    const dbValue = dbGet.val();
 
+    noReg = dbValue.noReg;
+  } catch (getError) {
+    console.log(getError)
+  }
+  // const getToken = get(child(rootReference, `Student/s102030`));
+  // const token = getToken.val();
+  // parentToken = token.TarentToken;
 
+};
+
+const getToken = async () => {
+  try {
+    const database = getDatabase();
+    const rootReference = r(database);
+    const dbGet = await get(child(rootReference, `Student/${noReg}`));
+    const dbValue = dbGet.val();
+    parentToken = dbValue.ParentToken;
+  } catch (error) {
+    console.log(getError)
+  }
+}
+
+const pushNotification = async () => {
+  await getNoreg();
+  await getToken();
+  console.log(parentToken)
+  
+  axios
+  .post('https://uk-student-tracker-api.herokuapp.com/push-notification', {
+    token: `${parentToken}`
+  })
+  .then(res => {
+    console.log('res',res)
+  })
+  .catch(error => {
+    console.log('error', error)
+  })
+}
 
 const Button = ({onPress, title}) => {
   return (
@@ -55,6 +100,8 @@ const MainLoc = () => {
 
   useEffect(() => {
     handlePermissions();
+    getNoreg();
+    getToken();
   }, []);
 
   const handlePermissions = () => {
@@ -203,6 +250,9 @@ Boundary.add(eiffelGeofence)
         showsUserLocation={true}
         userLocationUpdateInterval={500}
         showsMyLocationButton
+        onUserLocationChange={(e) =>{
+          // console.log("onUserLocationChange", e.nativeEvent.coordinate);
+        }}
         loadingEnabled={true}
         showsCompass
         ref={mapRef}
@@ -272,6 +322,7 @@ const addGeofences = () => {
 
 Boundary.on(Events.ENTER, id => {
   console.log('Background Enter');
+  pushNotification();
 
   PushNotification.localNotification({
     channelId: 'boundary-demo',
@@ -285,7 +336,9 @@ Boundary.on(Events.ENTER, id => {
 });
 
 Boundary.on(Events.EXIT, id => {
+
   console.log('Background Exit');
+  pushNotification();
   PushNotification.localNotification({
     channelId: 'boundary-demo',
     title: 'EXIT SIGNAL',

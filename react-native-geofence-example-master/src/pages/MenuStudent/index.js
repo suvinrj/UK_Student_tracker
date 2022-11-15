@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useEffect } from 'react';
 import { Locate, Logout, Notif, PhoneCall, RectPurple, WaParent, CallParent, LocateStudent } from '../../assets'
 import { Gap, Header, ButtonMenu } from '../../components'
@@ -21,7 +21,7 @@ const MenuStudent = ({navigation}) => {
   const [PhoneNumber,setPhoneNumber] = useState('');
   const [studentName, setStudentName] = useState('')
   let wa = '';
-
+  const mapRef = useRef(null);
   const getValues = async () => {
     try {
       const database = getDatabase();
@@ -37,6 +37,19 @@ const MenuStudent = ({navigation}) => {
 
 useEffect(() => {
   getValues();
+  <MapView
+  followsUserLocation
+  showsUserLocation={true}
+  userLocationUpdateInterval={500}
+  onUserLocationChange={(e) =>{
+    console.log("onUserLocationChange", e.nativeEvent.coordinate);
+  }}
+  loadingEnabled={true}
+  style={styles.map}
+  ref={mapRef}
+>
+
+</MapView>
 }, []);
 
 const getWa = () => {
@@ -205,28 +218,28 @@ Button5: {
     
 
 wacall:{
-    marginLeft: 220,
-    marginTop: 10,
+    marginLeft: 120,
+    marginTop: 20,
         },
 
 callphone:{
-    marginLeft: 40,
-    marginTop: -10,
+    marginLeft: 120,
+    marginTop: 20,
         },  
         
 locateStudent:{
-    marginLeft: 220,
+    marginLeft: 120,
     marginTop: 20,
               }, 
 
-notifikasi:{
-    marginLeft: 50,
-    marginTop: -10,
-              }, 
+// notifikasi:{
+//     marginLeft: 50,
+//     marginTop: -10,
+//               }, 
 
 Logout:{
-    marginLeft: 40,
-    marginTop: 40,
+    marginLeft: 35,
+    marginTop: 20,
               }, 
               Logout1:{
                 marginLeft: 40,
@@ -236,7 +249,6 @@ Logout:{
  });
 
 export default MenuStudent
-
 
 
 
