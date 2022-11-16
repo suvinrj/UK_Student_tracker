@@ -41,9 +41,10 @@ const SignUpParent = ({navigation}) => {
                 Name: name,
                 PhoneNumber: PhoneNumber
               })
+              console.log('dataStudent:', dataStudent)
               update(r(db, `Parent/${re.user.uid}/Student`), {
-                noReg: dataStudent[3],
-                StudentPhoneNumber: dataStudent[2]
+                noReg: noReg,
+                StudentPhoneNumber: dataStudent[3]
               })
               const data = {
                 uid: re.user.uid,
