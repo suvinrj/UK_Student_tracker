@@ -352,7 +352,6 @@ Boundary.on(Events.ENTER, id => {
 Boundary.on(Events.EXIT, id => {
 
   console.log('Background Exit');
-  pushNotification();
   PushNotification.localNotification({
     channelId: 'boundary-demo',
     title: 'EXIT SIGNAL',

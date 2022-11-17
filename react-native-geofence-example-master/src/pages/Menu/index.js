@@ -116,10 +116,16 @@ const Menu = ({navigation}) => {
       messaging().getToken(firebase.app().options.messagingSenderId).then((token)=>{
         console.log(`token:`, token);
         console.log('noreg student', noReg)
+        console.log('parentPhoneNumber', parentPhoneNumber)
         update(r(db, `Student/${noReg}/`), {
           ParentToken: token,
           x_ParentPhoneNumber: parentPhoneNumber
         })
+        .then((result) => {
+          console.log("data updated")
+        }).catch((err) => {
+          console.log("error while update:", err)
+        });
       })
       const unsubscribe = messaging().onMessage(async remoteMsg => {
         const channelId = Math.random().toString(36).substring(7);
