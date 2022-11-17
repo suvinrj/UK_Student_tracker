@@ -262,7 +262,7 @@ Boundary.add(eiffelGeofence)
         
       >
         <Callout>
-          <Text>This is the main building</Text>
+          <Text>Student is Here!</Text>
         </Callout>
 
       </Marker>
@@ -278,7 +278,7 @@ Boundary.add(eiffelGeofence)
 
 
 
-      <Button onPress={onNotificationTestPress} title="WHATSUP" />
+      <Button onPress={onNotificationTestPress} title="Retrieve Student Location" />
     </View>
   );
 };

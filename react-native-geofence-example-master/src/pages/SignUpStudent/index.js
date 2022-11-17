@@ -46,7 +46,7 @@ const SignUpStudent = ({navigation}) => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
     <View style={styles.page} >
-      <Header title='Hi Student, Sign Up' />
+      <Header title='Student, Sign Up' />
       <View style={styles.contentWrapper} >
       <TextInput title="Name" placeholder="Type your name" value={name} onChangeText={text=>setName(text)}/>
         <Gap height={16} />

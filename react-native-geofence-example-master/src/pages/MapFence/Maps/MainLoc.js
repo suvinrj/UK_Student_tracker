@@ -286,7 +286,7 @@ Boundary.add(eiffelGeofence)
      
         {renderEiffelGeofences()}
       </MapView>
-      <Button onPress={onNotificationTestPress} title="Notification Test" />
+      <Button onPress={onNotificationTestPress} title="Transmit Location" />
     </View>
   );
 };
