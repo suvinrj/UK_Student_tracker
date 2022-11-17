@@ -11,6 +11,7 @@ import {WhatsappCall} from '../../assets'
 import { TouchableOpacity } from 'react-native';
 import {getDatabase, ref, child, get} from "firebase/database";
 import { auth } from '../../../firebase/firebase-config';
+import { async } from '@firebase/util';
 
 
 
@@ -21,22 +22,43 @@ const MenuStudent = ({navigation}) => {
   const [PhoneNumber,setPhoneNumber] = useState('');
   const [studentName, setStudentName] = useState('')
   let wa = '';
+  let noReg = '';
   const mapRef = useRef(null);
-  const getValues = async () => {
+
+  const getNoreg = async () => {
     try {
       const database = getDatabase();
       const rootReference = ref(database);
       const dbGet = await get(child(rootReference, `Student/${auth.currentUser.uid}`));
       const dbValue = dbGet.val();
+      noReg = dbValue.noReg;
+      console.log("1. no reg:", noReg)
+    } catch (getError) {
+      console.log(getError)
+    }
+  };
+  
+  const getValues = async () => {
+    console.log("2. no reg:", noReg)
+    try {
+      const database = getDatabase();
+      const rootReference = ref(database);
+      const dbGet = await get(child(rootReference, `Student/${noReg}`));
+      const dbValue = dbGet.val();
       setStudentName(dbValue.Name)
-      setPhoneNumber(dbValue.PhoneNumber)
+      setPhoneNumber(dbValue.x_ParentPhoneNumber)
     } catch (getError) {
       console.log(getError)
     }
   };
 
+  const getData = async () => {
+    await getNoreg();
+    getValues();
+  }
+
 useEffect(() => {
-  getValues();
+  getData();
   <MapView
   followsUserLocation
   showsUserLocation={true}
@@ -117,8 +139,9 @@ const getWa = () => {
       
       <View style={styles.wacall}>
       <TouchableOpacity onPress={() => {
-                  Linking.openURL(`whatsapp://send?phone=${PhoneNumber}`)
-                }}>
+        getWa();
+        Linking.openURL(`whatsapp://send?phone=${wa}`)
+      }}>
       <WaParent/>
       </TouchableOpacity>
       </View>

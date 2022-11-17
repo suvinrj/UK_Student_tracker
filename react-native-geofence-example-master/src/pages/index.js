@@ -10,8 +10,9 @@ import SignInStudent from "./SignInStudent";
 import SignUpStudent from "./SignUpStudent";
 import SignUpParent from "./SignUp";
 import MenuStudent from "./MenuStudent";
+import MainLocParent from "./MapFenceParent/Maps/MainLocParent";
 
 // import MapCircle from "./MapFence/Maps/MapCircle";
 import MainLoc from "./MapFence/Maps/MainLoc";
 
-export{SignInParent, SplashScreen, Great, Pick, Menu, Notification, MainLoc, AddChild, SignUpStudent, SignInStudent, MenuStudent, SignUpParent};
+export{SignInParent, SplashScreen, Great, Pick, Menu, Notification, MainLoc, AddChild, SignUpStudent, SignInStudent, MenuStudent, SignUpParent, MainLocParent};

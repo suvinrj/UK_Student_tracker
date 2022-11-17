@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SignIn, SplashScreen, Great, Menu, video, Notification, MainLoc, AddChild, Pick, SignInParent, SignInStudent, SignUpStudent, SignUpParent, MenuStudent} from '../pages';
+import { SignIn, SplashScreen, Great, Menu, video, Notification, MainLoc, AddChild, Pick, SignInParent, SignInStudent, SignUpStudent, SignUpParent, MenuStudent, MainLocParent} from '../pages';
 
 import SignUp from '../pages/SignUp';
 import { async } from '@firebase/util';
@@ -55,6 +55,10 @@ const Router = () => {
         />    
         <Stack.Screen name="MainLoc" 
         component={MainLoc} 
+        options={{headerShown: false}} 
+        />    
+        <Stack.Screen name="MainLocParent" 
+        component={MainLocParent} 
         options={{headerShown: false}} 
         />    
     </Stack.Navigator>

@@ -24,6 +24,7 @@ const Menu = ({navigation}) => {
   const [parentName, setParentName] = useState('')
   let wa = '';
   let noReg = '';
+  let parentPhoneNumber = '';
 
 
   const getValues = async () => {
@@ -34,6 +35,7 @@ const Menu = ({navigation}) => {
       const dbValue = dbGet.val();
       setParentName(dbValue.Name)
       setPhoneNumber(dbValue.Student.StudentPhoneNumber)
+      parentPhoneNumber = dbValue.PhoneNumber;
       noReg=dbValue.Student.noReg;
     } catch (getError) {
       console.log(getError)
@@ -115,7 +117,8 @@ const Menu = ({navigation}) => {
         console.log(`token:`, token);
         console.log('noreg student', noReg)
         update(r(db, `Student/${noReg}/`), {
-          ParentToken: token
+          ParentToken: token,
+          x_ParentPhoneNumber: parentPhoneNumber
         })
       })
       const unsubscribe = messaging().onMessage(async remoteMsg => {
@@ -195,9 +198,9 @@ const Menu = ({navigation}) => {
       
       <View style={styles.wacall}>
       <TouchableOpacity onPress={() => {
-                  // Linking.openURL(`whatsapp://send?phone=${wa}`)
-                  getWa()
-                }}>
+        getWa()
+        Linking.openURL(`whatsapp://send?phone=${wa}`)
+      }}>
       <WhatsappCall/>
       </TouchableOpacity>
       </View>
@@ -212,7 +215,7 @@ const Menu = ({navigation}) => {
       </View>
 
       <View style={styles.locateStudent}>
-      <TouchableOpacity  onPress={()=>navigation.navigate('MainLoc')}>
+      <TouchableOpacity  onPress={()=>navigation.navigate('MainLocParent')}>
       <Locate/>
       </TouchableOpacity>
       </View>
