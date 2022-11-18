@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, View, Alert } from 'react-native'
 import React, {useState} from 'react'
 import { Button, Header, TextInput, Gap } from '../../components'
 import { auth, db } from '../../../firebase/firebase-config'
@@ -18,29 +18,37 @@ const SignUpStudent = ({navigation}) => {
     const [noReg, setNoReg] = useState('');
 
   const RegisterUser = () => {
-    console.log('res', email, password, noReg);
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((re)=>{
-      console.log(re);
-      update(r(db, `Student/${noReg}`), {
-        Email: email,
-        Name: name,
-        ParentToken: '',
-        PhoneNumber: PhoneNumber,
+    if(!name || !password || !email || !PhoneNumber || !noReg){
+      Alert.alert(
+        "Alert!",
+        "Please fill all boxes. Thank you!"
+      )
+    } else {
+
+      console.log('res', email, password, noReg);
+      createUserWithEmailAndPassword(auth, email, password)
+      .then((re)=>{
+        console.log(re);
+        update(r(db, `Student/${noReg}`), {
+          Email: email,
+          Name: name,
+          ParentToken: '',
+          PhoneNumber: PhoneNumber,
+        })
+        update(r(db, `Student/${auth.currentUser.uid}`),{
+          noReg: noReg
+        })
+        const data = {
+          uid: re.user.uid,
+        }
+        storeData('user', data)
+        navigation.navigate('MenuStudent', data)
       })
-      update(r(db, `Student/${auth.currentUser.uid}`),{
-        noReg: noReg
+      .catch((err)=>{
+        console.log(err);
       })
-      const data = {
-        uid: re.user.uid,
-      }
-      storeData('user', data)
-      navigation.navigate('Menu', data)
-    })
-  .catch((err)=>{
-    console.log(err);
-  })
-}
+    }
+  }
 
 
   return (
