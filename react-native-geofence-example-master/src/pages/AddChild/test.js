@@ -153,7 +153,7 @@ import {
     titleEmail: {
       fontSize: 14,
       fontFamily: fonts.Poppins.medium,
-      color: '#000000',
+      color: '#242424',
     },
     emailContainer: {
       backgroundColor: '#FFFFFF',

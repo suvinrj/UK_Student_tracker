@@ -1,3 +1,4 @@
+#import <Firebase.h>
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
 #import "AppDelegate.h"
@@ -54,8 +55,10 @@ static void InitializeFlipper(UIApplication *application) {
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
 
+  [FIRApp configure];
   return YES;
 }
+
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {

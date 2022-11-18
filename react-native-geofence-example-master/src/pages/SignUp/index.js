@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, Alert, ScrollView } from 'react-native'
 import React, {useState} from 'react'
 import { Button, Header, TextInput, Gap } from '../../components'
 import { auth, db } from '../../../firebase/firebase-config'
@@ -19,59 +19,68 @@ const SignUpParent = ({navigation}) => {
   let dataStudent = []
 
   const RegisterUser = () => {
-    console.log('res', email, password);
-    const dbRef = r(getDatabase());
-      get(child(dbRef, `Student/${noReg}`)).then((snapshot) => {
-        snapshot.forEach(function(item){
-          var itemVal = item.val()
-          dataStudent.push(itemVal)
-        })
-  
-        if (snapshot.exists()) {
-          createUserWithEmailAndPassword(auth, email, password)
-          .then((re)=>{
-            update(r(db, `Parent/${re.user.uid}`), {
-              Email: email,
-              Name: name,
-              PhoneNumber: PhoneNumber
-            })
-            update(r(db, `Parent/${re.user.uid}/Student`), {
-              noReg: dataStudent[3],
-              StudentPhoneNumber: dataStudent[2]
-            })
-            const data = {
-              uid: re.user.uid,
-            }
-            storeData('user', data)
-            navigation.navigate('Menu', data)
+    if(!name || !password || !email || !PhoneNumber || !noReg){
+      Alert.alert(
+        "Alert!",
+        "Please fill all boxes. Thank you!"
+      )
+    } else {
+      console.log('res', email, password);
+      const dbRef = r(getDatabase());
+        get(child(dbRef, `Student/${noReg}`)).then((snapshot) => {
+          snapshot.forEach(function(item){
+            var itemVal = item.val()
+            dataStudent.push(itemVal)
           })
-        .catch((err)=>{
-          console.log(err);
-        })
-        } else {
-          console.log("No data available");
-        }
-      }).catch((error) => {
-        console.error(error);
-      });
+
+          if (snapshot.exists()) {
+            createUserWithEmailAndPassword(auth, email, password)
+            .then((re)=>{
+              update(r(db, `Parent/${re.user.uid}`), {
+                Email: email,
+                Name: name,
+                PhoneNumber: PhoneNumber
+              })
+              console.log('dataStudent:', dataStudent)
+              update(r(db, `Parent/${re.user.uid}/Student`), {
+                noReg: noReg,
+                StudentPhoneNumber: dataStudent[3]
+              })
+              const data = {
+                uid: re.user.uid,
+              }
+              storeData('user', data)
+              navigation.navigate('Menu', data)
+            })
+          .catch((err)=>{
+            console.log(err);
+          })
+          } else {
+            console.log("No data available");
+          }
+        }).catch((error) => {
+          console.error(error);
+        });
+    }
 }
 
 
   return (
+    <ScrollView showsVerticalScrollIndicator={false}>
     <View style={styles.page} >
-      <Header title='Hi Parent, Sign Up' />
+      <Header title='Parent, Sign Up' />
       <View style={styles.contentWrapper} >
         <TextInput title="Name" placeholder="Type your name" value={name} onChangeText={text=>setName(text)}/>
         <Gap height={16} />
         <TextInput title="Email Address" placeholder="Type your email address" value={email} onChangeText={text=>setEmail(text)}/>
         <Gap height={16} />
-        <TextInput title="Password" placeholder="Type your password" value={password} secureTextEntry={true} onChangeText={text=>setPassword(text)}/>
+        <TextInput title="Password" placeholder="Type your password" value={password}  onChangeText={text=>setPassword(text)}/>
         <Gap height={24} />
-        <TextInput title="Phone Number" placeholder="Type your Phone Number" value={PhoneNumber} secureTextEntry={true} onChangeText={text=>setPhoneNumber(text)}/>
+        <TextInput title="Phone Number" placeholder="Type your Phone Number" value={PhoneNumber}  onChangeText={text=>setPhoneNumber(text)}/>
         <Gap height={24} />
 
       
-        <TextInput title="Student Nomor Regis " placeholder="Type Student Nomor Regis"  value={noReg} secureTextEntry={true} onChangeText={text=>setnoReg(text)}/>
+        <TextInput title="Student Nomor Regis " placeholder="Type Student Nomor Regis"  value={noReg}  onChangeText={text=>setnoReg(text)}/>
         <Gap height={24} />
         <Button 
           title="Register"
@@ -85,6 +94,7 @@ const SignUpParent = ({navigation}) => {
         /> */}
       </View>
     </View>
+    </ScrollView>
   )
 }
 

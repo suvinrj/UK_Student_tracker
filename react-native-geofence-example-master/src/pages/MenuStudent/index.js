@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useEffect } from 'react';
 import { Locate, Logout, Notif, PhoneCall, RectPurple, WaParent, CallParent, LocateStudent } from '../../assets'
 import { Gap, Header, ButtonMenu } from '../../components'
@@ -11,6 +11,7 @@ import {WhatsappCall} from '../../assets'
 import { TouchableOpacity } from 'react-native';
 import {getDatabase, ref, child, get} from "firebase/database";
 import { auth } from '../../../firebase/firebase-config';
+import { async } from '@firebase/util';
 
 
 
@@ -21,22 +22,56 @@ const MenuStudent = ({navigation}) => {
   const [PhoneNumber,setPhoneNumber] = useState('');
   const [studentName, setStudentName] = useState('')
   let wa = '';
+  let noReg = '';
+  const mapRef = useRef(null);
 
-  const getValues = async () => {
+  const getNoreg = async () => {
     try {
       const database = getDatabase();
       const rootReference = ref(database);
       const dbGet = await get(child(rootReference, `Student/${auth.currentUser.uid}`));
       const dbValue = dbGet.val();
+      noReg = dbValue.noReg;
+      console.log("1. no reg:", noReg)
+    } catch (getError) {
+      console.log(getError)
+    }
+  };
+  
+  const getValues = async () => {
+    console.log("2. no reg:", noReg)
+    try {
+      const database = getDatabase();
+      const rootReference = ref(database);
+      const dbGet = await get(child(rootReference, `Student/${noReg}`));
+      const dbValue = dbGet.val();
       setStudentName(dbValue.Name)
-      setPhoneNumber(dbValue.PhoneNumber)
+      setPhoneNumber(dbValue.x_ParentPhoneNumber)
     } catch (getError) {
       console.log(getError)
     }
   };
 
+  const getData = async () => {
+    await getNoreg();
+    getValues();
+  }
+
 useEffect(() => {
-  getValues();
+  getData();
+  <MapView
+  followsUserLocation
+  showsUserLocation={true}
+  userLocationUpdateInterval={500}
+  onUserLocationChange={(e) =>{
+    console.log("onUserLocationChange", e.nativeEvent.coordinate);
+  }}
+  loadingEnabled={true}
+  style={styles.map}
+  ref={mapRef}
+>
+
+</MapView>
 }, []);
 
 const getWa = () => {
@@ -104,8 +139,9 @@ const getWa = () => {
       
       <View style={styles.wacall}>
       <TouchableOpacity onPress={() => {
-                  Linking.openURL(`whatsapp://send?phone=${PhoneNumber}`)
-                }}>
+        getWa();
+        Linking.openURL(`whatsapp://send?phone=${wa}`)
+      }}>
       <WaParent/>
       </TouchableOpacity>
       </View>
@@ -205,28 +241,28 @@ Button5: {
     
 
 wacall:{
-    marginLeft: 220,
-    marginTop: 10,
+    marginLeft: 120,
+    marginTop: 20,
         },
 
 callphone:{
-    marginLeft: 40,
-    marginTop: -10,
+    marginLeft: 120,
+    marginTop: 20,
         },  
         
 locateStudent:{
-    marginLeft: 220,
+    marginLeft: 120,
     marginTop: 20,
               }, 
 
-notifikasi:{
-    marginLeft: 50,
-    marginTop: -10,
-              }, 
+// notifikasi:{
+//     marginLeft: 50,
+//     marginTop: -10,
+//               }, 
 
 Logout:{
-    marginLeft: 40,
-    marginTop: 40,
+    marginLeft: 35,
+    marginTop: 20,
               }, 
               Logout1:{
                 marginLeft: 40,
@@ -236,7 +272,6 @@ Logout:{
  });
 
 export default MenuStudent
-
 
 
 

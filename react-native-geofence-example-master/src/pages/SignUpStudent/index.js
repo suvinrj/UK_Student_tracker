@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import React, {useState} from 'react'
 import { Button, Header, TextInput, Gap } from '../../components'
 import { auth, db } from '../../../firebase/firebase-config'
@@ -25,7 +25,11 @@ const SignUpStudent = ({navigation}) => {
       update(r(db, `Student/${noReg}`), {
         Email: email,
         Name: name,
+        ParentToken: '',
         PhoneNumber: PhoneNumber,
+      })
+      update(r(db, `Student/${auth.currentUser.uid}`),{
+        noReg: noReg
       })
       const data = {
         uid: re.user.uid,
@@ -40,18 +44,19 @@ const SignUpStudent = ({navigation}) => {
 
 
   return (
+    <ScrollView showsVerticalScrollIndicator={false}>
     <View style={styles.page} >
-      <Header title='Hi Student, Sign Up' />
+      <Header title='Student, Sign Up' />
       <View style={styles.contentWrapper} >
       <TextInput title="Name" placeholder="Type your name" value={name} onChangeText={text=>setName(text)}/>
         <Gap height={16} />
-      <TextInput title="No. Regis" placeholder="Type Nomor Regis" value={noReg} secureTextEntry={true} onChangeText={text=>setNoReg(text)}/>
+      <TextInput title="No. Regis" placeholder="Type Nomor Regis" value={noReg}  onChangeText={text=>setNoReg(text)}/>
         <Gap height={24} />
         <TextInput title="Email Address" placeholder="Type your email address" value={email} onChangeText={text=>setEmail(text)}/>
         <Gap height={16} />
-        <TextInput title="Password" placeholder="Type your password" value={password} secureTextEntry={true} onChangeText={text=>setPassword(text)}/>
+        <TextInput title="Password" placeholder="Type your password" value={password}  onChangeText={text=>setPassword(text)}/>
         <Gap height={24} />
-        <TextInput title="Phone Number" placeholder="Type your phone number" keyboardType='number-pad' value={PhoneNumber} secureTextEntry={true} onChangeText={text=>setPhoneNumber(text)}/>
+        <TextInput title="Phone Number" placeholder="Type your phone number" keyboardType='number-pad' value={PhoneNumber}  onChangeText={text=>setPhoneNumber(text)}/>
     
         <Gap height={24} />
         
@@ -67,6 +72,7 @@ const SignUpStudent = ({navigation}) => {
         /> */}
       </View>
     </View>
+    </ScrollView>
   )
 }
 

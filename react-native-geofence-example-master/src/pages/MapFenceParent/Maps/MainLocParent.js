@@ -5,17 +5,19 @@ import PushNotification, {Importance} from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import Boundary, {Events} from 'react-native-boundary';
 import Permissions, {PERMISSIONS, RESULTS} from 'react-native-permissions';
-import MapView, {Polygon} from 'react-native-maps';
+import MapView, { Callout, Circle, Marker }  from 'react-native-maps';
 import { unklabGeofence } from '../Coordate_Geofence/Coordinate';
 import { locations } from '../unklab';
-import {getDatabase, ref as r, child, get, update} from "firebase/database";
+import {getDatabase, ref as r, child, get} from "firebase/database";
 import { auth, db } from '../../../../firebase/firebase-config';
 
 import {name as appName} from '../../../../app.json';
 import {AppRegistry} from 'react-native';
 
+
 import { eiffelGeofence} from '../Coordate_Geofence/Coordinate';
 import axios from 'axios';
+import { numberOfLines } from 'deprecated-react-native-prop-types/DeprecatedTextPropTypes';
 
 const isAndroid = Platform.OS === 'android';
 const isIOS = Platform.OS === 'ios';
@@ -47,10 +49,10 @@ const getNoreg = async () => {
   try {
     const database = getDatabase();
     const rootReference = r(database);
-    const dbGet = await get(child(rootReference, `Student/${auth.currentUser.uid}`));
+    const dbGet = await get(child(rootReference, `Parent/${auth.currentUser.uid}/Student`));
     const dbValue = dbGet.val();
-
     noReg = dbValue.noReg;
+    
   } catch (getError) {
     console.log(getError)
   }
@@ -72,40 +74,6 @@ const getToken = async () => {
   }
 }
 
-const pushNotificationEntered = async () => {
-  await getNoreg();
-  await getToken();
-  console.log(parentToken)
-  
-  axios
-  .post('https://uk-student-tracker-api.herokuapp.com/push-notification/entered', {
-    token: `${parentToken}`
-  })
-  .then(res => {
-    console.log('res',res)
-  })
-  .catch(error => {
-    console.log('error', error)
-  })
-}
-
-const pushNotificationExited = async () => {
-  await getNoreg();
-  await getToken();
-  console.log(parentToken)
-  
-  axios
-  .post('https://uk-student-tracker-api.herokuapp.com/push-notification/exited', {
-    token: `${parentToken}`
-  })
-  .then(res => {
-    console.log('res',res)
-  })
-  .catch(error => {
-    console.log('error', error)
-  })
-}
-
 const Button = ({onPress, title}) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.button}>
@@ -114,13 +82,15 @@ const Button = ({onPress, title}) => {
   );
 };
 
-const MainLoc = () => {
+const MainLocParent = () => {
   const mapRef = useRef(null);
 
   useEffect(() => {
     handlePermissions();
     getNoreg();
     getToken();
+    onNotificationTestPress();
+    console.log("noReg:", noReg)
   }, []);
 
   const handlePermissions = () => {
@@ -198,33 +168,23 @@ Boundary.add(eiffelGeofence)
   };
 
 
-    
-  const onNotificationTestPress = () => {
-    console.log("already update", longitude, latitude)
-    update(r(db, `Student/${noReg}/z_location`), {
-      longitude: longitude,
-      latitude: latitude
-  });
+
+  const onNotificationTestPress = async() => {
+      try {
+        const database = getDatabase();
+        const rootReference = r(database);
+        const dbGet = await get(child(rootReference, `Student/${noReg}/z_location`));
+        const dbValue = dbGet.val();
+
+        latitude = dbValue.latitude;
+        longitude = dbValue.longitude;
+        console.log("latitude: ", latitude,"longitude:", longitude)
+      } catch (getError) {
+        console.log(getError)
+      }
   };
 
 
-
-
-
-
-
-  // const renderFreeWayGeofences = () => {
-  //   return freewayGeofences.map(geofence => {
-  //     return (
-  //       <MapCircle
-  //         key={geofence.id}
-  //         latitude={geofence.lat}
-  //         longitude={geofence.lng}
-  //         radius={geofence.radius}
-  //       />
-  //     );
-  //   });
-  // };
 
   const renderEiffelGeofences = () => {
     return (
@@ -261,32 +221,64 @@ Boundary.add(eiffelGeofence)
 
   return (
     <View style={styles.container}>
-      <MapView
+      {/* <MapView
         followsUserLocation
         showsUserLocation={true}
         userLocationUpdateInterval={500}
         showsMyLocationButton
-        onUserLocationChange={(e) =>{
-          // console.log("onUserLocationChange", e.nativeEvent.coordinate.latitude , e.nativeEvent.coordinate.longitude );
-          latitude = e.nativeEvent.coordinate.latitude;
-          longitude = e.nativeEvent.coordinate.longitude;
-       }}
-
-        
-
-
-
+        mapType='satellite'
         loadingEnabled={true}
         showsCompass
         ref={mapRef}
         style={styles.map}
        
       >
-        {/* {renderFreeWayGeofences()} */}
+        
      
         {renderEiffelGeofences()}
-      </MapView>
-      <Button onPress={onNotificationTestPress} title="Transmit Location" />
+      </MapView> */}
+
+
+      <MapView
+       showsUserLocation={true}
+       followsUserLocation={true}
+       zoomEnabled={true}
+      //  mapType='satellite'
+       style={styles.map}
+      //  region={{
+      //    latitude: 1.417495, 
+      //    longitude: 124.983943,
+      //    latitudeDelta: 0.002,
+      //    longitudeDelta: 0.0005,
+      //  }}
+     >
+      <Marker
+      coordinate={{latitude: latitude, 
+        longitude: longitude}}
+        title="UNKLAB"
+        description="Main building"
+
+
+        
+      >
+        <Callout>
+          <Text>Student is Here!</Text>
+        </Callout>
+
+      </Marker>
+      
+     </MapView>
+
+
+
+
+
+
+
+
+
+
+      <Button onPress={onNotificationTestPress} title="Retrieve Student Location" />
     </View>
   );
 };
@@ -345,7 +337,6 @@ const addGeofences = () => {
 
 Boundary.on(Events.ENTER, id => {
   console.log('Background Enter');
-  pushNotificationEntered();
 
   PushNotification.localNotification({
     channelId: 'boundary-demo',
@@ -361,7 +352,6 @@ Boundary.on(Events.ENTER, id => {
 Boundary.on(Events.EXIT, id => {
 
   console.log('Background Exit');
-  pushNotificationExited();
   PushNotification.localNotification({
     channelId: 'boundary-demo',
     title: 'EXIT SIGNAL',
@@ -395,4 +385,4 @@ Boundary.onReRegisterRequired(onAfterRebootHeadlessTaskForAndroid);
 
 AppRegistry.registerComponent(appName, () => MainLoc);
 
-export default MainLoc;
+export default MainLocParent;

@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View, TextInput as TextInputRN } from 'react-native'
 import React from 'react'
-import { keyboardType } from 'deprecated-react-native-prop-types/DeprecatedTextInputPropTypes'
+import { keyboardType, secureTextEntry } from 'deprecated-react-native-prop-types/DeprecatedTextInputPropTypes'
 
-const TextInput = ({title, placeholder, onChangeText, value, keyboardType}) => {
+const TextInput = ({title, placeholder, onChangeText, value, keyboardType, secureTextEntry}) => {
   return (
     <View>
       <Text style={styles.text}>{title}</Text>
-      <TextInputRN style={styles.input} placeholder={placeholder} onChangeText={onChangeText} value={value} keyboardType={keyboardType}/>
+      <TextInputRN style={styles.input} placeholder={placeholder} secureTextEntry={secureTextEntry} placeholderTextColor={'#4D4949'} onChangeText={onChangeText} value={value} keyboardType={keyboardType}/>
     </View>
   )
 }
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 15,
         fontFamily: "Roboto-Medium",
-        color: '#020202',
+        color: '#242424',
         marginBottom: 6,
     }, 
     input: {
@@ -28,5 +28,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         paddingLeft: 10,
         paddingHorizontal: 10,
+        color: '#242424'
     }
 })
